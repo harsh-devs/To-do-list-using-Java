@@ -1,0 +1,155 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Simple Task model class
+class Task {
+    private int id;
+    private String description;
+    private boolean done;
+
+    public Task(int id, String description) {
+        this.id = id;
+        this.description = description;
+        this.done = false;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    @Override
+    public String toString() {
+        String status = done ? "DONE" : "PENDING";
+        return id + " - " + description + " [" + status + "]";
+    }
+}
+
+public class TodoApp {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final List<Task> tasks = new ArrayList<>();
+    private static int nextId = 1;
+
+    public static void main(String[] args) {
+        System.out.println("=== Simple To-Do List App ===");
+        int choice;
+
+        do {
+            printMenu();
+            choice = readInt("Enter your choice: ");
+
+            switch (choice) {
+                case 1:
+                    addTask();
+                    break;
+                case 2:
+                    listTasks();
+                    break;
+                case 3:
+                    markTaskDone();
+                    break;
+                case 4:
+                    deleteTask();
+                    break;
+                case 5:
+                    System.out.println("Exiting... Bye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        } while (choice != 5);
+    }
+
+    private static void printMenu() {
+        System.out.println();
+        System.out.println("1. Add task");
+        System.out.println("2. List tasks");
+        System.out.println("3. Mark task as done");
+        System.out.println("4. Delete task");
+        System.out.println("5. Exit");
+    }
+
+    private static int readInt(String message) {
+        while (true) {
+            System.out.print(message);
+            if (scanner.hasNextInt()) {
+                int value = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+                return value;
+            } else {
+                System.out.println("Please enter a valid number.");
+                scanner.nextLine(); // clear invalid input
+            }
+        }
+    }
+
+    private static void addTask() {
+        System.out.print("Enter task description: ");
+        String desc = scanner.nextLine();
+        Task task = new Task(nextId++, desc);
+        tasks.add(task);
+        System.out.println("Task added: " + task);
+    }
+
+    private static void listTasks() {
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks found.");
+            return;
+        }
+        System.out.println("--- Tasks ---");
+        for (Task t : tasks) {
+            System.out.println(t);
+        }
+    }
+
+    private static void markTaskDone() {
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks to update.");
+            return;
+        }
+        int id = readInt("Enter task ID to mark as done: ");
+        Task task = findTaskById(id);
+        if (task == null) {
+            System.out.println("Task not found.");
+        } else {
+            task.setDone(true);
+            System.out.println("Task updated: " + task);
+        }
+    }
+
+    private static void deleteTask() {
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks to delete.");
+            return;
+        }
+        int id = readInt("Enter task ID to delete: ");
+        Task task = findTaskById(id);
+        if (task == null) {
+            System.out.println("Task not found.");
+        } else {
+            tasks.remove(task);
+            System.out.println("Task deleted.");
+        }
+    }
+
+    private static Task findTaskById(int id) {
+        for (Task t : tasks) {
+            if (t.getId() == id) {
+                return t;
+            }
+        }
+        return null;
+    }
+}
